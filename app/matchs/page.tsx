@@ -72,7 +72,7 @@ const MatchsAVenirPage: React.FC = () => {
 
   return (
     <div className="container mx-auto">
-      <h1 className="text-2xl text-center font-bold py-5 uppercase">Nos Matchs</h1>
+      <h1 className="text-2xl text-center font-bold py-5 uppercase">Matchs U16</h1>
       <div className="grid grid-cols-1 gap-4">
         {matches.map((match) => (
           <Link key={match.ma_no} href={`/matchs/${match.ma_no}`}>
