@@ -143,13 +143,22 @@ const ClassementComponent = () => {
       <h2 className="text-2xl text-center font-bold py-5 uppercase">
         Classement R1 Occitanie
       </h2>
-      <div className="flex flex-row justify-between items-start md:items-center mb-4">
-        <p className="text-sm text-black mt-2 md:mt-0 mr-2">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
+        {/* Date de mise à jour */}
+        <p className="text-sm text-black">
           Mise à jour le : {formatDate(lastUpdated)}
         </p>
-        <button className="bg-transparent text-sm hover:bg-gray-200 text-black font-bold p-2 border border-gray-300 rounded">Saison 2024-2025</button>
-        <div className="mb-4">
-          <label htmlFor="category" className="mr-2 font-semibold">Catégorie :</label>
+
+        {/* Bouton Saison */}
+        <button className="bg-transparent text-sm hover:bg-gray-200 text-black font-bold px-4 py-2 border border-gray-300 rounded">
+          Saison 2024-2025
+        </button>
+
+        {/* Sélecteur de catégorie */}
+        <div className="flex items-center">
+          <label htmlFor="category" className="mr-2 font-semibold">
+            Catégorie :
+          </label>
           <select
             id="category"
             value={selectedCategory}
@@ -160,9 +169,11 @@ const ClassementComponent = () => {
             <option value="15">U15</option>
             <option value="16">U16</option>
             <option value="17">U17</option>
+            <option value="18">U18</option>
           </select>
         </div>
       </div>
+
       <div className="overflow-x-auto">
         <table className="table-auto min-w-full border-collapse">
           <thead>
