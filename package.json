@@ -4,10 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && prisma migrate deploy && next build",
+    "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "prisma:seed": "prisma db seed"
+    "lint": "next lint"
   },
   "dependencies": {
     "@next/font": "13.1.6",
