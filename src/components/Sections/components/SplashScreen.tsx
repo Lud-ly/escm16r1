@@ -123,7 +123,7 @@ const SplashScreen = ({ finishLoading }: { finishLoading: () => void }) => {
                     {currentScreen === 1 && ( // Affiche le logo 1
                         <div className="flex flex-col items-center justify-center">
                             <h2 className="text-2xl text-center font-bold py-2 uppercase">
-                                U16 R1 Occitanie
+                                ESCM R1 Occitanie
                             </h2>
                             <Image
                                 id="logo1"
