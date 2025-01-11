@@ -135,7 +135,6 @@ const ClassementComponent = () => {
     };
 
     fetchClassements();
-    fetchClubResults();
 
     return () => {
       // controller.abort();
@@ -336,7 +335,7 @@ const ClassementComponent = () => {
           </tbody>
         </table>
       </div>
-      <ChickenSoccerStory/>
+      <ChickenSoccerStory />
     </div>
   );
 };

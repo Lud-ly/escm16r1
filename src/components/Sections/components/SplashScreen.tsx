@@ -72,9 +72,9 @@ const SplashScreen = ({ finishLoading }: { finishLoading: () => void }) => {
                 duration: 500,
                 easing: "easeInOutExpo",
                 begin: () => {
-                    setBgColor("rgb(9, 87, 159)"); // Change la couleur de fond
+                    setBgColor("#fff"); // Change la couleur de fond
                 },
-                complete: () => setBgColor("rgb(9, 87, 159)"), // Assure que la couleur de fond reste
+                complete: () => setBgColor("#fff"), // Assure que la couleur de fond reste
             })
             .add({
                 targets: "#logo2",
