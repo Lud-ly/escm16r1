@@ -2,13 +2,11 @@
 
 import React, { useEffect, useState } from "react";
 import { Match } from "../../types/types";
-import ReactPaginate from "react-paginate";
 import Image from "next/image";
 import Loader from "../../src/components/Sections/components/Loader";
 import { FaSync } from "react-icons/fa";
 import Link from "next/link";
 import ChickenSoccerStory from "~/src/components/Sections/components/ChickenSoccerStory";
-
 
 export default function TousLesMatchsPage() {
   const [matches, setMatches] = useState<Match[]>([]);
@@ -24,17 +22,8 @@ export default function TousLesMatchsPage() {
     { id: '16', name: 'U16' },
     { id: '17', name: 'U17' },
     { id: '18', name: 'U18' },
+    { id: '20', name: 'Sénior' }
   ];
-
-  const findPageWithNextMatch = (allMatches: Match[]): number => {
-    const today = new Date();
-    const nextMatch = allMatches.find(match => new Date(match.date) >= today);
-    if (nextMatch) {
-      const matchIndex = allMatches.indexOf(nextMatch);
-      return Math.floor(matchIndex / 30) + 1;
-    }
-    return 1;
-  };
 
   const fetchAllMatches = async () => {
     setIsLoading(true);
@@ -52,32 +41,20 @@ export default function TousLesMatchsPage() {
         allMatches.push(...data["hydra:member"]);
       }
 
-      const nextPage = findPageWithNextMatch(allMatches);
-      setCurrentPage(nextPage);
+      // Sort matches by journée and then by date
+      const sortedMatches = allMatches.sort((a, b) =>
+        a.poule_journee.number - b.poule_journee.number ||
+        new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
 
       const today = new Date();
-      const nextMatch = allMatches.find(match => new Date(match.date) >= today);
+      const nextMatch = sortedMatches.find(match => new Date(match.date) >= today);
       if (nextMatch) {
         setSelectedJournee(nextMatch.poule_journee.number);
       }
 
-      const matchesForPage = allMatches.slice((nextPage - 1) * 30, nextPage * 30);
-      setMatches(matchesForPage);
+      setMatches(sortedMatches);
       setTotalPages(totalPages);
-    } catch (error) {
-      console.error("Erreur lors de la récupération des matchs:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchMatchesForPage = async (page: number) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(`/api/matchs/${page}?category=${selectedCategoryMatch}`);
-      const data = await response.json();
-      setMatches(data["hydra:member"]);
-      setTotalPages(Math.ceil(data["hydra:totalItems"] / 30));
     } catch (error) {
       console.error("Erreur lors de la récupération des matchs:", error);
     } finally {
@@ -89,19 +66,9 @@ export default function TousLesMatchsPage() {
     fetchAllMatches();
   }, [selectedCategoryMatch]);
 
-  useEffect(() => {
-    if (currentPage >= 1) {
-      fetchMatchesForPage(currentPage);
-    }
-  }, [currentPage]);
-
-  const handlePageClick = (selectedItem: { selected: number }) => {
-    setCurrentPage(selectedItem.selected + 1);
-  };
-
-  const handleCategoryChange = (category: string) => {
-    setSelectedCategoryMatch(category);
-    setCurrentPage(1);
+  const getSuffix = (number: number) => {
+    if (number === 1) return "ère";
+    return "ème";
   };
 
   const groupedMatches = matches.reduce((acc: Record<number, Match[]>, match) => {
@@ -112,11 +79,6 @@ export default function TousLesMatchsPage() {
     acc[journeeNumber].push(match);
     return acc;
   }, {});
-
-  const getSuffix = (number: number) => {
-    if (number === 1) return "ère";
-    return "ème";
-  };
 
   if (isLoading) {
     return (
@@ -129,8 +91,9 @@ export default function TousLesMatchsPage() {
   return (
     <div className="container mx-auto px-1">
       <h1 className="text-2xl font-bold py-5 text-center uppercase">Tous les Matchs</h1>
+
       {/* Sélecteur de catégorie */}
-      <div className="flex items-center p-3">
+      <div className="flex items-center p-3 justify-center">
         <label htmlFor="category" className="mr-2 font-semibold">
           Catégorie :
         </label>
@@ -140,14 +103,12 @@ export default function TousLesMatchsPage() {
           onChange={(e) => setSelectedCategoryMatch(e.target.value)}
           className="p-2 border rounded-md bg-[#800020] text-gray-300"
         >
-          <option value="14">U14</option>
-          <option value="15">U15</option>
-          <option value="16">U16</option>
-          <option value="17">U17</option>
-          <option value="18">U18</option>
-          <option value="20">Sénior</option>
+          {categories.map(category => (
+            <option key={category.id} value={category.id}>{category.name}</option>
+          ))}
         </select>
       </div>
+
       <div className="mb-4 text-center flex flex-wrap justify-center">
         {Object.keys(groupedMatches).map((journeeNumber) => (
           <button

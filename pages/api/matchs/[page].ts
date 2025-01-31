@@ -20,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const competInfo = competConfig[selectedCat as keyof typeof competConfig];
 
-  const apiUrl = `https://api-dofa.fff.fr/api/compets/${competInfo.id}/phases/${competInfo.phase}/poules/1/matchs?page=${page}&clNo=21095`;
+  const apiUrl = `https://api-dofa.fff.fr/api/compets/${competInfo.id}/phases/${competInfo.phase}/poules/1/matchs?page=${page}`;
 
   try {
     const response = await fetch(apiUrl);
