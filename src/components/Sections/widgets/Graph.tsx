@@ -122,8 +122,7 @@ const GraphComponent: React.FC = () => {
         }, []);
 
         // Créer les labels des matchs
-        const labels = matches.map((_, index) => `Match ${matches.length - index}`);
-
+        const labels = matches.map((_, index) => `Match ${index + 1}`);
         // Retourner les bonnes données à envoyer au graphique
         return {
             labels,
@@ -199,12 +198,14 @@ const GraphComponent: React.FC = () => {
                 },
                 ticks: {
                     callback: function (tickValue: string | number) {
+                        // Vérifier si tickValue est un nombre
                         if (typeof tickValue === 'number') {
-                            return tickValue % 1 === 0 ? tickValue : Math.round(tickValue);
+                            // Si c'est un nombre, on l'arrondit
+                            return tickValue % 1 === 0 ? tickValue : Math.round(tickValue); // Afficher seulement les entiers
                         }
-                        return tickValue;
+                        return tickValue; // Si ce n'est pas un nombre, on renvoie tel quel
                     },
-                    stepSize: 1,
+                    stepSize: 1, // Pas de 1, pour éviter les décimales
                 },
             },
         },
@@ -213,6 +214,7 @@ const GraphComponent: React.FC = () => {
                 callbacks: {
                     title: (tooltipItems) => {
                         const matchIndex = tooltipItems[0].dataIndex;
+                        // Accéder au match en prenant les 6 derniers et inverser leur ordre
                         const match = resultsByCategory[selectedCategory]?.slice(0, 6).reverse()[matchIndex];
 
                         if (match) {
@@ -223,6 +225,7 @@ const GraphComponent: React.FC = () => {
                     },
                     label: (tooltipItem) => {
                         const matchIndex = tooltipItem.dataIndex;
+                        // Accéder au match en prenant les 6 derniers et inverser leur ordre
                         const match = resultsByCategory[selectedCategory]?.slice(0, 6).reverse()[matchIndex];
 
                         if (match) {
@@ -237,13 +240,14 @@ const GraphComponent: React.FC = () => {
             },
             title: {
                 display: true,
-                text: `Points pris sur 6 derniers matchs - U${selectedCategory}`,
+                text: `Tendance des 6 derniers matchs - U${selectedCategory}`,
                 font: {
                     size: 16,
                 },
             },
         },
     };
+
 
     if (isLoading) {
         return (
