@@ -95,52 +95,59 @@ const MatchsAVenirPage: React.FC = () => {
           <option value="20">Sénior</option>
         </select>
       </div>
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {matches.map((match) => (
           <Link key={match.ma_no} href={`/matchs/${match.ma_no}`}>
-            <div className="border p-4 rounded-md shadow-md cursor-pointer">
-              <p className="text-center mt-2">
-                {new Date(match.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).replace(/^\w/, (c) => c.toUpperCase())} à <span className="text-blue-500">{match.time}</span>
+            <div className="border p-4 rounded-md shadow-md cursor-pointer hover:shadow-lg transition-shadow duration-300 bg-white">
+              <p className="text-center text-gray-600 mb-3">
+                {new Date(match.date).toLocaleDateString('fr-FR', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                }).replace(/^\w/, (c) => c.toUpperCase())} à <span className="text-blue-500">{match.time}</span>
               </p>
 
-              <div className="grid grid-cols-3 gap-4 items-center mt-4">
+              <div className="grid grid-cols-3 gap-4 items-center">
                 {/* Équipe domicile */}
-                <div className="flex flex-col items-center shadow-lg rounded-lg p-3">
+                <div className="flex flex-col items-center shadow-lg rounded-lg p-3 bg-gray-50">
                   <Image
                     src={match.home.club.logo}
                     alt={`Logo ${match.home.club.logo}`}
                     width={40}
                     height={40}
-                    className="w-10 h-10 mb-2"
+                    className="w-10 h-10 mb-2 object-contain"
                     onError={(e) => {
                       e.currentTarget.onerror = null;
                       e.currentTarget.src = "/next.svg.png";
                     }}
                   />
-                  <span className="text-center truncate max-w-[80px] text-sm">
+                  <span className="text-center truncate max-w-[80px] text-sm font-medium">
                     {match.home.short_name}
                   </span>
                 </div>
 
                 {/* Score */}
-                <div className="text-2xl font-bold text-center shadow-lg rounded-lg p-3">
-                  {match.home_score} - {match.away_score}
+                <div className="text-2xl font-bold text-center shadow-lg rounded-lg p-3 bg-gray-100">
+                  {match.home_score !== null && match.away_score !== null
+                    ? `${match.home_score} - ${match.away_score}`
+                    : '⏳'}
                 </div>
 
                 {/* Équipe extérieur */}
-                <div className="flex flex-col items-center shadow-lg rounded-lg p-3">
+                <div className="flex flex-col items-center shadow-lg rounded-lg p-3 bg-gray-50">
                   <Image
                     src={match.away.club.logo}
                     alt={`Logo ${match.away.club.logo}`}
                     width={40}
                     height={40}
-                    className="w-10 h-10 mb-2"
+                    className="w-10 h-10 mb-2 object-contain"
                     onError={(e) => {
                       e.currentTarget.onerror = null;
                       e.currentTarget.src = "/next.svg.png";
                     }}
                   />
-                  <span className="text-center truncate max-w-[80px] text-sm">
+                  <span className="text-center truncate max-w-[80px] text-sm font-medium">
                     {match.away.short_name}
                   </span>
                 </div>

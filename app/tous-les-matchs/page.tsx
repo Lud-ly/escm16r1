@@ -152,74 +152,65 @@ export default function TousLesMatchsPage() {
                     </tr>
                     {matches.map((match) => (
                       <tr key={match.ma_no} className="border-b-2 border-gray-700 bg-white my-4">
-                        <td className="p-2 block sm:table-cell">
-                          <Link href={`/matchs/${match.ma_no}`} className="block w-full h-full mt-5">
-                            <p className="text-center mt-2">
-                              {new Date(match.date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).replace(/^\w/, (c) => c.toUpperCase())} à <span className="text-red-500">{match.time}</span>
-                            </p>
-                            <div className="flex flex-row justify-around items-center m-2">
-                              {/* Équipe domicile */}
-                              <div className="flex flex-col items-center">
-                                <Image
-                                  src={match.home.club.logo}
-                                  alt={`Logo ${match.home.club.logo}`}
-                                  width={70}
-                                  height={70}
-                                  className="mb-2"
-                                  onError={(e) => {
-                                    e.currentTarget.onerror = null;
-                                    e.currentTarget.src = "/next.svg.png";
-                                  }}
-                                />
-                                <span className="text-center text-sm font-bold">
-                                  {match.home.short_name.split(' ')[0]}
-                                </span>
-                              </div>
-
-                              {/* VS */}
-                              <div className="flex flex-col items-center justify-center">
-                                <span className="text-red-500 text-2xl">vs</span>
-                              </div>
-
-                              {/* Équipe extérieur */}
-                              <div className="flex flex-col items-center">
-                                <Image
-                                  src={match.away.club.logo}
-                                  alt={`Logo ${match.away.short_name}`}
-                                  width={70}
-                                  height={70}
-                                  className="mb-2"
-                                  onError={(e) => {
-                                    e.currentTarget.onerror = null;
-                                    e.currentTarget.src = "/next.svg.png";
-                                  }}
-                                />
-                                <span className="text-center text-sm font-bold">
-                                  {match.away.short_name.split(' ')[0]}
-                                </span>
-                              </div>
-                            </div>
-                          </Link>
-                        </td>
-                        <td className="p-2 font-semibold block sm:table-cell">
+                        <td colSpan={4} className="p-4">
                           <Link href={`/matchs/${match.ma_no}`} className="block w-full h-full">
-                            <div className="flex flex-row justify-around items-center m-2">
-                              {match.home_score !== null && match.away_score !== null ? (
-                                <h2 className="text-lg sm:text-2xl font-bold">
-                                  {match.home_score} - {match.away_score}
-                                </h2>
-                              ) : (
-                                <h2 className="text-lg sm:text-2xl font-bold">⏳</h2>
-                              )}
-                            </div>
-                          </Link>
-                        </td>
-                        <td className="p-2 block sm:table-cell">
-                          <Link href={`/matchs/${match.ma_no}`} className="block w-full h-full">
-                            <div className="flex flex-row justify-center items-center m-2">
-                              <span className="text-gray-500 text-sm">
-                                {match.terrain?.name ?? "⏳"}, {match.terrain?.city ?? ""}
-                              </span>
+                            <div className="bg-white shadow-lg rounded-lg overflow-hidden p-4 flex flex-col md:flex-row items-center">
+                              <div className="flex-1 text-center md:text-left">
+                                <p className="text-center md:text-left text-gray-700 font-semibold">
+                                  {new Date(match.date).toLocaleDateString('fr-FR', {
+                                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                                  }).replace(/^\w/, (c) => c.toUpperCase())} à <span className="text-red-500">{match.time}</span>
+                                </p>
+                              </div>
+                              <div className="flex flex-row justify-around items-center flex-1 my-4">
+                                <div className="flex flex-col items-center">
+                                  <Image
+                                    src={match.home.club.logo}
+                                    alt={`Logo ${match.home.club.logo}`}
+                                    width={70}
+                                    height={70}
+                                    className="mb-2"
+                                    onError={(e) => {
+                                      e.currentTarget.onerror = null;
+                                      e.currentTarget.src = "/next.svg.png";
+                                    }}
+                                  />
+                                  <span className="text-center text-sm font-bold">
+                                    {match.home.short_name.split(' ')[0]}
+                                  </span>
+                                </div>
+                                <div className="flex flex-col items-center justify-center">
+                                  <span className="text-red-500 text-2xl">vs</span>
+                                  {match.home_score !== null && match.away_score !== null ? (
+                                    <h2 className="text-lg sm:text-2xl font-bold">
+                                      {match.home_score} - {match.away_score}
+                                    </h2>
+                                  ) : (
+                                    <h2 className="text-lg sm:text-2xl font-bold">⏳</h2>
+                                  )}
+                                </div>
+                                <div className="flex flex-col items-center">
+                                  <Image
+                                    src={match.away.club.logo}
+                                    alt={`Logo ${match.away.short_name}`}
+                                    width={70}
+                                    height={70}
+                                    className="mb-2"
+                                    onError={(e) => {
+                                      e.currentTarget.onerror = null;
+                                      e.currentTarget.src = "/next.svg.png";
+                                    }}
+                                  />
+                                  <span className="text-center text-sm font-bold">
+                                    {match.away.short_name.split(' ')[0]}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex-1 text-center md:text-right">
+                                <p className="text-gray-500 text-sm mt-2">
+                                  {match.terrain?.name ?? "⏳"}, {match.terrain?.city ?? ""}
+                                </p>
+                              </div>
                             </div>
                           </Link>
                         </td>
