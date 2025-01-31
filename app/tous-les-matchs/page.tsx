@@ -179,7 +179,7 @@ export default function TousLesMatchsPage() {
                                     {match.home.short_name.split(' ')[0]}
                                   </span>
                                 </div>
-                                <div className="flex flex-col items-center justify-center">
+                                <div className="flex flex-col items-center justify-center mx-5">
                                   <span className="text-red-500 text-2xl">vs</span>
                                   {match.home_score !== null && match.away_score !== null ? (
                                     <h2 className="text-lg sm:text-2xl font-bold">

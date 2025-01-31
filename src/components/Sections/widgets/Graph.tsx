@@ -35,7 +35,7 @@ const GraphComponent: React.FC = () => {
     useEffect(() => {
         const fetchAllCategories = async () => {
             setIsLoading(true);
-            const categories = ["14", "15", "16", "17", "18"];
+            const categories = ["14", "15", "16", "17", "18", "20"];
             const results: Record<string, Match[]> = {};
 
             try {
