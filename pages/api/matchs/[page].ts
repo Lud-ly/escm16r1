@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const competConfig = {
-    '14': { id: '420287', phase: 2 }, // U14 en phase 2
+    '14': { id: '420287', phase: 2 },
     '15': { id: '420288', phase: 1 },
     '16': { id: '420289', phase: 1 },
     '17': { id: '420290', phase: 1 },
