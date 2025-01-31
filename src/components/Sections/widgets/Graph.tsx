@@ -92,7 +92,7 @@ const GraphComponent: React.FC = () => {
             const isHome = match.home.short_name === "ENT. ST CLEMENT MONT";
             const isAway = match.away.short_name === "ENT. ST CLEMENT MONT";
 
-            let points = 0; // Valeur des points par défaut à 0
+            let points = 0;
 
             // Si ENT joue à domicile
             if (isHome) {
@@ -100,8 +100,6 @@ const GraphComponent: React.FC = () => {
                     points = 3; // Victoire à domicile
                 } else if (homeScore === awayScore) {
                     points = 1; // Match nul à domicile
-                } else {
-                    points = 0; // Défaite à domicile
                 }
             }
 
@@ -111,14 +109,17 @@ const GraphComponent: React.FC = () => {
                     points = 3; // Victoire à l'extérieur
                 } else if (awayScore === homeScore) {
                     points = 1; // Match nul à l'extérieur
-                } else {
-                    points = 0; // Défaite à l'extérieur
                 }
             }
 
-
-            return points; // Retourne le nombre de points calculé pour ce match
+            return points;
         });
+
+        // Calculer le total cumulatif des points
+        const cumulativePoints = pointsHistory.reduce((acc: number[], points: number) => {
+            const lastTotal = acc.length > 0 ? acc[acc.length - 1] : 0;
+            return [...acc, lastTotal + points];
+        }, []);
 
         // Créer les labels des matchs
         const labels = matches.map((_, index) => `Match ${matches.length - index}`);
@@ -129,7 +130,7 @@ const GraphComponent: React.FC = () => {
             datasets: [
                 {
                     label: `U${selectedCategory}`,
-                    data: pointsHistory, // Données des points pour ENT.ST CLEMENT MONT
+                    data: cumulativePoints, // Utiliser les points cumulatifs
                     borderColor: getColorForCategory(selectedCategory),
                     backgroundColor: getColorForCategory(selectedCategory),
                     tension: 0.4,
@@ -146,14 +147,12 @@ const GraphComponent: React.FC = () => {
                         },
                         ticks: {
                             callback: function (tickValue: string | number) {
-                                // Vérifier si tickValue est un nombre
                                 if (typeof tickValue === 'number') {
-                                    // Si c'est un nombre, on l'arrondit
-                                    return tickValue % 1 === 0 ? tickValue : Math.round(tickValue); // Afficher seulement les entiers
+                                    return tickValue % 1 === 0 ? tickValue : Math.round(tickValue);
                                 }
-                                return tickValue; // Si ce n'est pas un nombre, on renvoie tel quel
+                                return tickValue;
                             },
-                            stepSize: 1, // Pas de 1, pour éviter les décimales
+                            stepSize: 1,
                         },
                         beginAtZero: true,
                     },
@@ -162,7 +161,6 @@ const GraphComponent: React.FC = () => {
                     tooltip: {
                         callbacks: {
                             label: function (context: { raw: number; }) {
-                                // Afficher les points arrondis dans les tooltips
                                 return `Points: ${Math.round(context.raw)}`;
                             },
                         },
@@ -178,7 +176,6 @@ const GraphComponent: React.FC = () => {
             },
         };
     };
-
 
     const getColorForCategory = (category: string): string => {
         const colors = {
@@ -202,14 +199,12 @@ const GraphComponent: React.FC = () => {
                 },
                 ticks: {
                     callback: function (tickValue: string | number) {
-                        // Vérifier si tickValue est un nombre
                         if (typeof tickValue === 'number') {
-                            // Si c'est un nombre, on l'arrondit
-                            return tickValue % 1 === 0 ? tickValue : Math.round(tickValue); // Afficher seulement les entiers
+                            return tickValue % 1 === 0 ? tickValue : Math.round(tickValue);
                         }
-                        return tickValue; // Si ce n'est pas un nombre, on renvoie tel quel
+                        return tickValue;
                     },
-                    stepSize: 1, // Pas de 1, pour éviter les décimales
+                    stepSize: 1,
                 },
             },
         },
@@ -242,7 +237,7 @@ const GraphComponent: React.FC = () => {
             },
             title: {
                 display: true,
-                text: `Tendance des 6 derniers matchs - U${selectedCategory}`,
+                text: `Points pris sur 6 derniers matchs - U${selectedCategory}`,
                 font: {
                     size: 16,
                 },
