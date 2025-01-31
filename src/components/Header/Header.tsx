@@ -11,7 +11,7 @@ export const Header = () => {
 
   return (
     <div
-      className="flex flex-row justify-between items-center"
+      className="flex flex-row justify-between items-center p-5"
     >
       <Link href="/" onClick={handleLogoClick}>
         <Image
