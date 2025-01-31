@@ -29,6 +29,8 @@ interface Match {
 const MatchsAVenirPage: React.FC = () => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedCategoryMatch, setSelectedCategoryMatch] = useState<string>('16');
+
 
   useEffect(() => {
     const controller = new AbortController();
@@ -37,11 +39,12 @@ const MatchsAVenirPage: React.FC = () => {
     const fetchMatches = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch('/api/matchs', { signal });
+        const response = await fetch(`/api/matchs?category=${selectedCategoryMatch}`, { signal });
         if (!response.ok) {
           throw new Error('Failed to fetch match data');
         }
         const data = await response.json();
+        console.log('Fetched matches:', data['hydra:member']);
         setMatches(data['hydra:member']);
       } catch (error) {
         if (error === 'AbortError') {
@@ -59,7 +62,7 @@ const MatchsAVenirPage: React.FC = () => {
     return () => {
       controller.abort(); // Annule la requête si le composant est démonté
     };
-  }, []);
+  }, [selectedCategoryMatch]);
 
 
   if (isLoading) {
@@ -72,7 +75,25 @@ const MatchsAVenirPage: React.FC = () => {
 
   return (
     <div className="container mx-auto">
-      <h1 className="text-2xl text-center font-bold py-5 uppercase">Matchs U16</h1>
+      <h1 className="text-2xl text-center font-bold py-5 uppercase">Matchs</h1>
+      {/* Sélecteur de catégorie */}
+      <div className="flex items-center p-3">
+        <label htmlFor="category" className="mr-2 font-semibold">
+          Catégorie :
+        </label>
+        <select
+          id="category"
+          value={selectedCategoryMatch}
+          onChange={(e) => setSelectedCategoryMatch(e.target.value)}
+          className="p-2 border rounded-md bg-[#800020] text-gray-300"
+        >
+          <option value="14">U14</option>
+          <option value="15">U15</option>
+          <option value="16">U16</option>
+          <option value="17">U17</option>
+          <option value="18">U18</option>
+        </select>
+      </div>
       <div className="grid grid-cols-1 gap-4">
         {matches.map((match) => (
           <Link key={match.ma_no} href={`/matchs/${match.ma_no}`}>

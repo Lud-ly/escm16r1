@@ -16,8 +16,16 @@ export default function TousLesMatchsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedJournee, setSelectedJournee] = useState<number | null>(null);
+  const [selectedCategoryMatch, setSelectedCategoryMatch] = useState<string>('16');
 
-  // Find the page with the next match closest to the current date
+  const categories = [
+    { id: '14', name: 'U14' },
+    { id: '15', name: 'U15' },
+    { id: '16', name: 'U16' },
+    { id: '17', name: 'U17' },
+    { id: '18', name: 'U18' },
+  ];
+
   const findPageWithNextMatch = (allMatches: Match[]): number => {
     const today = new Date();
     const nextMatch = allMatches.find(match => new Date(match.date) >= today);
@@ -28,37 +36,34 @@ export default function TousLesMatchsPage() {
     return 1;
   };
 
-  // Fetch all matches and set the page with the closest upcoming match
   const fetchAllMatches = async () => {
     setIsLoading(true);
     try {
-      const firstResponse = await fetch('/api/matchs/1');
+      // Fetch first page to get total items
+      const firstResponse = await fetch(`/api/matchs/1?category=${selectedCategoryMatch}`);
       const firstData = await firstResponse.json();
       const totalItems = firstData["hydra:totalItems"];
       const totalPages = Math.ceil(totalItems / 30);
 
       const allMatches: Match[] = [];
       for (let page = 1; page <= totalPages; page++) {
-        const response = await fetch(`/api/matchs/${page}`);
+        const response = await fetch(`/api/matchs/${page}?category=${selectedCategoryMatch}`);
         const data = await response.json();
         allMatches.push(...data["hydra:member"]);
       }
 
       const nextPage = findPageWithNextMatch(allMatches);
-      setCurrentPage(nextPage); // Initially set to the closest match page
+      setCurrentPage(nextPage);
 
-      // Find the closest match's journee and set it
       const today = new Date();
       const nextMatch = allMatches.find(match => new Date(match.date) >= today);
       if (nextMatch) {
         setSelectedJournee(nextMatch.poule_journee.number);
       }
 
-      // Set matches for the closest match page
       const matchesForPage = allMatches.slice((nextPage - 1) * 30, nextPage * 30);
       setMatches(matchesForPage);
       setTotalPages(totalPages);
-
     } catch (error) {
       console.error("Erreur lors de la récupération des matchs:", error);
     } finally {
@@ -66,11 +71,10 @@ export default function TousLesMatchsPage() {
     }
   };
 
-  // Fetch matches for a specific page
   const fetchMatchesForPage = async (page: number) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/matchs/${page}`);
+      const response = await fetch(`/api/matchs/${page}?category=${selectedCategoryMatch}`);
       const data = await response.json();
       setMatches(data["hydra:member"]);
       setTotalPages(Math.ceil(data["hydra:totalItems"] / 30));
@@ -82,21 +86,24 @@ export default function TousLesMatchsPage() {
   };
 
   useEffect(() => {
-    fetchAllMatches(); // Initial fetch
-  }, []);
+    fetchAllMatches();
+  }, [selectedCategoryMatch]);
 
   useEffect(() => {
     if (currentPage >= 1) {
-      fetchMatchesForPage(currentPage); // Fetch specific page on page change
+      fetchMatchesForPage(currentPage);
     }
   }, [currentPage]);
 
-  // Handle pagination click
   const handlePageClick = (selectedItem: { selected: number }) => {
     setCurrentPage(selectedItem.selected + 1);
   };
 
-  // Group matches by journee
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategoryMatch(category);
+    setCurrentPage(1);
+  };
+
   const groupedMatches = matches.reduce((acc: Record<number, Match[]>, match) => {
     const journeeNumber = match.poule_journee.number;
     if (!acc[journeeNumber]) {
@@ -110,6 +117,7 @@ export default function TousLesMatchsPage() {
     if (number === 1) return "ère";
     return "ème";
   };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-start min-h-screen">
@@ -120,8 +128,25 @@ export default function TousLesMatchsPage() {
 
   return (
     <div className="container mx-auto px-1">
-      <h1 className="text-2xl font-bold py-5 text-center uppercase">Tous les Matchs U16</h1>
-
+      <h1 className="text-2xl font-bold py-5 text-center uppercase">Tous les Matchs</h1>
+      {/* Sélecteur de catégorie */}
+      <div className="flex items-center p-3">
+        <label htmlFor="category" className="mr-2 font-semibold">
+          Catégorie :
+        </label>
+        <select
+          id="category"
+          value={selectedCategoryMatch}
+          onChange={(e) => setSelectedCategoryMatch(e.target.value)}
+          className="p-2 border rounded-md bg-[#800020] text-gray-300"
+        >
+          <option value="14">U14</option>
+          <option value="15">U15</option>
+          <option value="16">U16</option>
+          <option value="17">U17</option>
+          <option value="18">U18</option>
+        </select>
+      </div>
       <div className="mb-4 text-center flex flex-wrap justify-center">
         {Object.keys(groupedMatches).map((journeeNumber) => (
           <button
@@ -244,55 +269,6 @@ export default function TousLesMatchsPage() {
             ))}
           </tbody>
         </table>
-      </div>
-
-      <div className="my-14 text-center">
-        <ReactPaginate
-          previousLabel={
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              className="w-6 h-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-          }
-          nextLabel={
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              className="w-6 h-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          }
-          breakLabel={"..."}
-          pageCount={totalPages}
-          marginPagesDisplayed={2}
-          pageRangeDisplayed={5}
-          onPageChange={handlePageClick}
-          containerClassName="pagination flex justify-center list-none p-0"
-          pageClassName="pagination__link mx-1 px-4 py-2 border border-red-800 text-black cursor-pointer"
-          activeClassName="pagination__link--active bg-red-800 text-white"
-          previousClassName="pagination__link px-4 py-2 border border-red-800 text-red-800 cursor-pointer"
-          nextClassName="pagination__link px-4 py-2 border border-red-800 text-red-800 cursor-pointer"
-          disabledClassName="pagination__link--disabled text-gray-400 cursor-not-allowed"
-          forcePage={currentPage - 1}
-        />
       </div>
       <ChickenSoccerStory />
     </div>

@@ -1,21 +1,33 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  // Vérifier que 'page' est fourni dans la requête, sinon, assigner une valeur par défaut
-  const page = req.query.page || 1; // Utilise 1 comme valeur par défaut
+  const page = req.query.page || 1;
+  const selectedCat = req.query.category || '16';
 
-  const apiUrl = `https://api-dofa.fff.fr/api/compets/420289/phases/1/poules/1/matchs?page=${page}`;
+  const validCategories = ['14', '15', '16', '17', '18'];
+  if (!validCategories.includes(selectedCat as string)) {
+    return res.status(400).json({ message: "Paramètre invalide." });
+  }
+
+  const competConfig = {
+    '14': { id: '420287', phase: 2 }, // U14 en phase 2
+    '15': { id: '420288', phase: 1 },
+    '16': { id: '420289', phase: 1 },
+    '17': { id: '420290', phase: 1 },
+    '18': { id: '420294', phase: 1 },
+  };
+
+  const competInfo = competConfig[selectedCat as keyof typeof competConfig];
+
+  const apiUrl = `https://api-dofa.fff.fr/api/compets/${competInfo.id}/phases/${competInfo.phase}/poules/1/matchs?page=${page}&clNo=21095`;
 
   try {
     const response = await fetch(apiUrl);
     if (!response.ok) {
-      // Détails de l'erreur avec le code de statut
       throw new Error(`Failed to fetch match data: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
-
-    // Vérifie la structure des données
     if (!data || !data["hydra:member"]) {
       throw new Error("Invalid data format received from the API.");
     }

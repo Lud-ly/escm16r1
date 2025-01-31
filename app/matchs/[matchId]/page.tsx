@@ -78,7 +78,7 @@ const MatchAVenirPage: React.FC<{ params: { 'matchId': string } }> = ({ params }
                 <Loader />
             </div>
         );
-    }    
+    }
 
     if (!matchData || matchData["hydra:member"].length === 0) {
         return <div><ArrowBack iSize={40} /><p className="text-center">Match non disponible pour l&#39;instant</p></div>;
@@ -134,8 +134,8 @@ const MatchAVenirPage: React.FC<{ params: { 'matchId': string } }> = ({ params }
 
             </div>
             <Link href={`https://occitanie.fff.fr/competitions?competition_id=420289&poule=1&match_id=${params['matchId']}`} target="_blank" className="mb-5">
-                <div className="flex justify-center items-center">
-                    <button className="text-white rounded-md p-2 hover:bg-gray-900"style={{ backgroundColor: "rgb(9, 87, 159)" }}>
+                <div className="flex justify-center items-center p-5">
+                    <button className="text-white rounded-md p-2 hover:bg-gray-900" style={{ backgroundColor: "rgb(9, 87, 159)" }}>
                         Fiche Match LFO
                     </button>
                 </div>

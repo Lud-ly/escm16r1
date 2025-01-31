@@ -47,7 +47,7 @@ interface ClubResult {
 }
 const baseUrl =
   process.env.NODE_ENV === "production"
-    ? "https://escm16r1.vercel.app"
+    ? "https://escmr1.vercel.app"
     : "http://localhost:3000";
 
 const ClassementComponent = () => {
@@ -155,7 +155,7 @@ const ClassementComponent = () => {
         </button>
 
         {/* Sélecteur de catégorie */}
-        <div className="flex items-center">
+        <div className="flex items-center p-1">
           <label htmlFor="category" className="mr-2 font-semibold">
             Catégorie :
           </label>
@@ -163,7 +163,7 @@ const ClassementComponent = () => {
             id="category"
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="p-2 border rounded-md"
+            className="p-2 border rounded-md bg-[#800020] text-gray-300"
           >
             <option value="14">U14</option>
             <option value="15">U15</option>
