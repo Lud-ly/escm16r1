@@ -275,6 +275,7 @@ const GraphComponent: React.FC = () => {
                     <option value="16">U16</option>
                     <option value="17">U17</option>
                     <option value="18">U18</option>
+                    <option value="senior">Sénior</option>
                 </select>
             </div>
 

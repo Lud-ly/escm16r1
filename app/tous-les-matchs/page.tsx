@@ -145,6 +145,7 @@ export default function TousLesMatchsPage() {
           <option value="16">U16</option>
           <option value="17">U17</option>
           <option value="18">U18</option>
+          <option value="20">Sénior</option>
         </select>
       </div>
       <div className="mb-4 text-center flex flex-wrap justify-center">

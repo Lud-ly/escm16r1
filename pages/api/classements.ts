@@ -5,7 +5,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const selectedCat = req.query.category || '16';
 
-  const validCategories = ['14', '15', '16', '17','18'];
+  const validCategories = ['14', '15', '16', '17', '18', '20'];
   if (!validCategories.includes(selectedCat as string)) {
     return res.status(400).json({ message: "Paramètre invalide." });
   }
@@ -16,10 +16,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     '16': '420289',
     '17': '420290',
     '18': '420294',
+    '20': '420269'
   }[selectedCat as string];
 
   const url = `https://api-dofa.fff.fr/api/compets/${competId}/phases/1/poules/1/classement_journees`;
- 
+
   try {
     const response = await fetch(url);
     console.log(response);
