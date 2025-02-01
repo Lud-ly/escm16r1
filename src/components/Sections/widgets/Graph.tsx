@@ -239,15 +239,27 @@ const GraphComponent: React.FC = () => {
             },
             legend: {
                 position: "top",
+                labels: {
+                    generateLabels: function (chart) {
+                        return chart.data.datasets.map((dataset, index) => ({
+                            text: `Régional ${index + 1}`,
+                            fillStyle: dataset.backgroundColor as string,
+                            strokeStyle: dataset.borderColor as string,
+                            lineWidth: 2,
+                            hidden: !chart.isDatasetVisible(index),
+                            datasetIndex: index,
+                        }));
+                    },
+                },
             },
             title: {
                 display: true,
-                text: `Tendance des 6 derniers matchs - U${selectedCategory}`,
+                text: `Tendance des 6 derniers matchs`,
                 font: {
                     size: 16,
                 },
             },
-        },
+        }
     };
     if (isLoading) {
         return (
@@ -284,7 +296,7 @@ const GraphComponent: React.FC = () => {
                 </div>
             ) : (
                 <div className="text-center text-gray-500 mt-4">
-                    Aucun match disponible pour cette catégorie.
+                    Aucune statistique disponible pour cette catégorie.
                 </div>
             )}
 
