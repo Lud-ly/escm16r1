@@ -198,14 +198,12 @@ const GraphComponent: React.FC = () => {
                 },
                 ticks: {
                     callback: function (tickValue: string | number) {
-                        // Vérifier si tickValue est un nombre
                         if (typeof tickValue === 'number') {
-                            // Si c'est un nombre, on l'arrondit
-                            return tickValue % 1 === 0 ? tickValue : Math.round(tickValue); // Afficher seulement les entiers
+                            return tickValue % 1 === 0 ? tickValue : Math.round(tickValue);
                         }
-                        return tickValue; // Si ce n'est pas un nombre, on renvoie tel quel
+                        return tickValue;
                     },
-                    stepSize: 1, // Pas de 1, pour éviter les décimales
+                    stepSize: 1,
                 },
             },
         },
@@ -214,7 +212,6 @@ const GraphComponent: React.FC = () => {
                 callbacks: {
                     title: (tooltipItems) => {
                         const matchIndex = tooltipItems[0].dataIndex;
-                        // Accéder au match en prenant les 6 derniers et inverser leur ordre
                         const match = resultsByCategory[selectedCategory]?.slice(0, 6).reverse()[matchIndex];
 
                         if (match) {
@@ -225,11 +222,16 @@ const GraphComponent: React.FC = () => {
                     },
                     label: (tooltipItem) => {
                         const matchIndex = tooltipItem.dataIndex;
-                        // Accéder au match en prenant les 6 derniers et inverser leur ordre
-                        const match = resultsByCategory[selectedCategory]?.slice(0, 6).reverse()[matchIndex];
+                        const matches = resultsByCategory[selectedCategory]?.slice(0, 6).reverse();
 
-                        if (match) {
-                            return `Score: ${match.home_score}-${match.away_score} (Points: ${tooltipItem.formattedValue})`;
+                        if (matches && matchIndex < matches.length) {
+                            const match = matches[matchIndex];
+                            const actualPoints = tooltipItem.formattedValue;
+                            // Calculer le maximum de points possibles basé sur le nombre de matchs joués jusqu'à présent
+                            // matchIndex + 1 car les indices commencent à 0
+                            const maxPossiblePoints = (matchIndex + 1) * 3;
+
+                            return `Score: ${match.home_score}-${match.away_score} (Points: ${actualPoints}/${maxPossiblePoints})`;
                         }
                         return "";
                     },
@@ -247,8 +249,6 @@ const GraphComponent: React.FC = () => {
             },
         },
     };
-
-
     if (isLoading) {
         return (
             <div className="flex justify-center items-center h-[400px]">
@@ -274,7 +274,7 @@ const GraphComponent: React.FC = () => {
                     <option value="16">U16</option>
                     <option value="17">U17</option>
                     <option value="18">U18</option>
-                    <option value="senior">Sénior</option>
+                    <option value="20">Sénior</option>
                 </select>
             </div>
 
