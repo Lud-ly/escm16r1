@@ -1,21 +1,20 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Match } from "../../types/types";
 import Image from "next/image";
 import Loader from "../../src/components/Sections/components/Loader";
-import { FaSync } from "react-icons/fa";
+import { FaSync, FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import Link from "next/link";
 import ChickenSoccerStory from "~/src/components/Sections/components/ChickenSoccerStory";
 import { useCategoryState } from '../../hooks/useCategoryState';
 
 export default function TousLesMatchsPage() {
   const [matches, setMatches] = useState<Match[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedJournee, setSelectedJournee] = useState<number | null>(null);
   const { selectedCategory, setCategory } = useCategoryState();
+  const [lastViewedCategory, setLastViewedCategory] = useState<string | null>(null);
 
   const categories = [
     { id: '14', name: 'U14' },
@@ -27,6 +26,11 @@ export default function TousLesMatchsPage() {
   ];
 
   const fetchAllMatches = async () => {
+    // Si on a déjà chargé cette catégorie, ne pas recharger
+    if (lastViewedCategory === selectedCategory && matches.length > 0) {
+      return;
+    }
+
     setIsLoading(true);
     try {
       // Fetch first page to get total items
@@ -36,11 +40,23 @@ export default function TousLesMatchsPage() {
       const totalPages = Math.ceil(totalItems / 30);
 
       const allMatches: Match[] = [];
-      for (let page = 1; page <= totalPages; page++) {
-        const response = await fetch(`/api/matchs/${page}?category=${selectedCategory}`);
-        const data = await response.json();
-        allMatches.push(...data["hydra:member"]);
+      // Ajouter les matchs de la première page déjà récupérée
+      allMatches.push(...firstData["hydra:member"]);
+      
+      // Récupérer les autres pages en parallèle pour accélérer le chargement
+      const otherPagesPromises = [];
+      for (let page = 2; page <= totalPages; page++) {
+        otherPagesPromises.push(
+          fetch(`/api/matchs/${page}?category=${selectedCategory}`)
+            .then(res => res.json())
+            .then(data => data["hydra:member"])
+        );
       }
+      
+      const otherPagesResults = await Promise.all(otherPagesPromises);
+      otherPagesResults.forEach(pageMatches => {
+        allMatches.push(...pageMatches);
+      });
 
       // Sort matches by journée and then by date
       const sortedMatches = allMatches.sort((a, b) =>
@@ -48,18 +64,40 @@ export default function TousLesMatchsPage() {
         new Date(a.date).getTime() - new Date(b.date).getTime()
       );
 
-      const today = new Date();
-      const nextMatch = sortedMatches.find(match => new Date(match.date) >= today);
-      if (nextMatch) {
-        setSelectedJournee(nextMatch.poule_journee.number);
-      }
-
       setMatches(sortedMatches);
-      setTotalPages(totalPages);
+      setLastViewedCategory(selectedCategory);
+      
+      // Trouver automatiquement la journée pertinente
+      findRelevantJournee(sortedMatches);
     } catch (error) {
       console.error("Erreur lors de la récupération des matchs:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Fonction pour trouver la journée la plus pertinente
+  const findRelevantJournee = (matchesList: Match[]) => {
+    const today = new Date();
+    
+    // Trouver la journée en cours (match le plus proche dans le futur)
+    const upcomingMatches = matchesList.filter(match => 
+      new Date(match.date) >= today && (match.home_score === null || match.away_score === null)
+    );
+    
+    // Si aucun match à venir, trouver le dernier match joué
+    if (upcomingMatches.length === 0) {
+      const pastMatches = matchesList.filter(match => 
+        new Date(match.date) < today || (match.home_score !== null && match.away_score !== null)
+      ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      
+      if (pastMatches.length > 0) {
+        setSelectedJournee(pastMatches[0].poule_journee.number);
+      }
+    } else {
+      // Prendre le prochain match à venir
+      upcomingMatches.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      setSelectedJournee(upcomingMatches[0].poule_journee.number);
     }
   };
 
@@ -72,14 +110,40 @@ export default function TousLesMatchsPage() {
     return "ème";
   };
 
-  const groupedMatches = matches.reduce((acc: Record<number, Match[]>, match) => {
-    const journeeNumber = match.poule_journee.number;
-    if (!acc[journeeNumber]) {
-      acc[journeeNumber] = [];
-    }
-    acc[journeeNumber].push(match);
-    return acc;
-  }, {});
+  // Utiliser useMemo pour éviter de recalculer les groupes à chaque rendu
+  const groupedMatches = useMemo(() => {
+    return matches.reduce((acc: Record<number, Match[]>, match) => {
+      const journeeNumber = match.poule_journee.number;
+      if (!acc[journeeNumber]) {
+        acc[journeeNumber] = [];
+      }
+      acc[journeeNumber].push(match);
+      return acc;
+    }, {});
+  }, [matches]);
+
+  // Obtenir les journées triées
+  const sortedJournees = useMemo(() => {
+    return Object.keys(groupedMatches)
+      .map(Number)
+      .sort((a, b) => a - b);
+  }, [groupedMatches]);
+
+  // Trouver les indices des journées précédente, actuelle et suivante
+  const currentJourneeIndex = useMemo(() => {
+    if (selectedJournee === null) return -1;
+    return sortedJournees.findIndex(j => j === selectedJournee);
+  }, [selectedJournee, sortedJournees]);
+
+  const prevJournee = currentJourneeIndex > 0 ? sortedJournees[currentJourneeIndex - 1] : null;
+  const nextJournee = currentJourneeIndex < sortedJournees.length - 1 ? sortedJournees[currentJourneeIndex + 1] : null;
+
+  // Déterminer si un match est passé mais sans score
+  const isPastMatchWithoutScore = (match: Match) => {
+    const matchDate = new Date(match.date);
+    const today = new Date();
+    return matchDate < today && (match.home_score === null || match.away_score === null);
+  };
 
   if (isLoading) {
     return (
@@ -110,25 +174,60 @@ export default function TousLesMatchsPage() {
         </select>
       </div>
 
-      <div className="mb-4 text-center flex flex-wrap justify-center">
-        {Object.keys(groupedMatches).map((journeeNumber) => (
+      {/* Navigation simplifiée des journées */}
+      <div className="mb-4 text-center flex justify-center items-center">
+        {prevJournee !== null && (
           <button
-            key={journeeNumber}
-            className={`mx-1 my-1 px-4 py-2 rounded transition duration-200 ease-in-out 
-              ${selectedJournee === Number(journeeNumber) ? "bg-yellow-500" : "bg-red-800"} 
-              text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-300`}
-            onClick={() => setSelectedJournee(selectedJournee === Number(journeeNumber) ? null : Number(journeeNumber))}
+            className="mx-1 my-1 px-4 py-2 rounded bg-gray-300 text-black transition duration-200 ease-in-out hover:bg-gray-400 focus:outline-none"
+            onClick={() => setSelectedJournee(prevJournee)}
           >
-            {journeeNumber}{getSuffix(Number(journeeNumber))} jour.
+            <FaArrowLeft className="inline mr-1" /> {prevJournee}{getSuffix(prevJournee)}
           </button>
-        ))}
+        )}
+        
+        <div className="mx-2 px-4 py-2 bg-yellow-500 text-white rounded">
+          {selectedJournee !== null ? (
+            <span>{selectedJournee}{getSuffix(selectedJournee)} journée</span>
+          ) : (
+            <span>Sélectionnez une journée</span>
+          )}
+        </div>
+        
+        {nextJournee !== null && (
+          <button
+            className="mx-1 my-1 px-4 py-2 rounded bg-gray-300 text-black transition duration-200 ease-in-out hover:bg-gray-400 focus:outline-none"
+            onClick={() => setSelectedJournee(nextJournee)}
+          >
+            {nextJournee}{getSuffix(nextJournee)} <FaArrowRight className="inline ml-1" />
+          </button>
+        )}
+        
         <button
-          className="mx-1 my-1 bg-gray-300 text-black px-4 py-2 rounded transition duration-200 ease-in-out hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+          className="ml-2 bg-red-800 text-white p-2 rounded-full transition duration-200 ease-in-out hover:bg-red-600 focus:outline-none"
           onClick={() => setSelectedJournee(null)}
+          title="Voir toutes les journées"
         >
           <FaSync />
         </button>
       </div>
+      
+      {/* Menu déroulant pour toutes les journées */}
+      {selectedJournee === null && (
+        <div className="mb-4 text-center">
+          <select 
+            className="p-2 border rounded-md bg-[#800020] text-white"
+            onChange={(e) => setSelectedJournee(Number(e.target.value))}
+            value=""
+          >
+            <option value="" disabled>Choisir une journée</option>
+            {sortedJournees.map(journee => (
+              <option key={journee} value={journee}>
+                {journee}{getSuffix(journee)} journée
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div className="overflow-x-auto">
         <table className="min-w-full border border-gray-300 rounded">
@@ -141,86 +240,96 @@ export default function TousLesMatchsPage() {
             </tr>
           </thead>
           <tbody>
-            {Object.entries(groupedMatches).map(([journeeNumber, matches]) => (
-              <React.Fragment key={journeeNumber}>
-                {selectedJournee === Number(journeeNumber) && (
-                  <>
-                    <tr className="bg-yellow-100">
-                      <td colSpan={4} className="text-center text-red-500 font-bold bg-yellow-500 text-2xl p-5 rounded">
-                        {journeeNumber}
-                        <sup>{getSuffix(Number(journeeNumber))}</sup> Journée
-                      </td>
-                    </tr>
-                    {matches.map((match) => (
-                      <tr key={match.ma_no} className="border-b-2 border-gray-700 bg-white my-4">
-                        <td colSpan={4} className="p-4">
-                          <Link href={`/matchs/${match.ma_no}`} className="block w-full h-full">
-                            <div className="bg-white shadow-lg rounded-lg overflow-hidden p-4 flex flex-col md:flex-row items-center">
-                              <div className="flex-1 text-center md:text-left">
-                                <p className="text-center md:text-left text-gray-700 font-semibold">
-                                  {new Date(match.date).toLocaleDateString('fr-FR', {
-                                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-                                  }).replace(/^\w/, (c) => c.toUpperCase())} à <span className="text-red-500">{match.time}</span>
-                                </p>
+            {Object.entries(groupedMatches).map(([journeeNumber, journeeMatches]) => {
+              // Si une journée est sélectionnée et que ce n'est pas celle-ci, ne pas afficher
+              if (selectedJournee !== null && Number(journeeNumber) !== selectedJournee) {
+                return null;
+              }
+              
+              // Filtrer les matchs passés sans score pour les journées à venir
+              const filteredMatches = journeeMatches.filter(match => 
+                !isPastMatchWithoutScore(match)
+              );
+              
+              if (filteredMatches.length === 0) return null;
+              
+              return (
+                <React.Fragment key={journeeNumber}>
+                  <tr className="bg-yellow-100">
+                    <td colSpan={4} className="text-center text-red-500 font-bold bg-yellow-500 text-2xl p-5 rounded">
+                      {journeeNumber}
+                      <sup>{getSuffix(Number(journeeNumber))}</sup> Journée
+                    </td>
+                  </tr>
+                  {filteredMatches.map((match) => (
+                    <tr key={match.ma_no} className="border-b-2 border-gray-700 bg-white my-4">
+                      <td colSpan={4} className="p-4">
+                        <Link href={`/matchs/${match.ma_no}`} className="block w-full h-full">
+                          <div className="bg-white shadow-lg rounded-lg overflow-hidden p-4 flex flex-col md:flex-row items-center">
+                            <div className="flex-1 text-center md:text-left">
+                              <p className="text-center md:text-left text-gray-700 font-semibold">
+                                {new Date(match.date).toLocaleDateString('fr-FR', {
+                                  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                                }).replace(/^\w/, (c) => c.toUpperCase())} à <span className="text-red-500">{match.time}</span>
+                              </p>
+                            </div>
+                            <div className="flex flex-row justify-around items-center flex-1 my-4">
+                              <div className="flex flex-col items-center">
+                                <Image
+                                  src={match.home.club.logo}
+                                  alt={`Logo ${match.home.club.logo}`}
+                                  width={70}
+                                  height={70}
+                                  className="mb-2"
+                                  onError={(e) => {
+                                    e.currentTarget.onerror = null;
+                                    e.currentTarget.src = "/next.svg.png";
+                                  }}
+                                />
+                                <span className="text-center text-sm font-bold">
+                                  {match.home.short_name.split(' ')[0]}
+                                </span>
                               </div>
-                              <div className="flex flex-row justify-around items-center flex-1 my-4">
-                                <div className="flex flex-col items-center">
-                                  <Image
-                                    src={match.home.club.logo}
-                                    alt={`Logo ${match.home.club.logo}`}
-                                    width={70}
-                                    height={70}
-                                    className="mb-2"
-                                    onError={(e) => {
-                                      e.currentTarget.onerror = null;
-                                      e.currentTarget.src = "/next.svg.png";
-                                    }}
-                                  />
-                                  <span className="text-center text-sm font-bold">
-                                    {match.home.short_name.split(' ')[0]}
-                                  </span>
-                                </div>
-                                <div className="flex flex-col items-center justify-center mx-5">
-                                  <span className="text-red-500 text-2xl">vs</span>
-                                  {match.home_score !== null && match.away_score !== null ? (
-                                    <h2 className="text-lg sm:text-2xl font-bold">
-                                      {match.home_score} - {match.away_score}
-                                    </h2>
-                                  ) : (
-                                    <h2 className="text-lg sm:text-2xl font-bold">⏳</h2>
-                                  )}
-                                </div>
-                                <div className="flex flex-col items-center">
-                                  <Image
-                                    src={match.away.club.logo}
-                                    alt={`Logo ${match.away.short_name}`}
-                                    width={70}
-                                    height={70}
-                                    className="mb-2"
-                                    onError={(e) => {
-                                      e.currentTarget.onerror = null;
-                                      e.currentTarget.src = "/next.svg.png";
-                                    }}
-                                  />
-                                  <span className="text-center text-sm font-bold">
-                                    {match.away.short_name.split(' ')[0]}
-                                  </span>
-                                </div>
+                              <div className="flex flex-col items-center justify-center mx-5">
+                                <span className="text-red-500 text-2xl">vs</span>
+                                {match.home_score !== null && match.away_score !== null ? (
+                                  <h2 className="text-lg sm:text-2xl font-bold">
+                                    {match.home_score} - {match.away_score}
+                                  </h2>
+                                ) : (
+                                  <h2 className="text-lg sm:text-2xl font-bold">⏳</h2>
+                                )}
                               </div>
-                              <div className="flex-1 text-center md:text-right">
-                                <p className="text-gray-500 text-sm mt-2">
-                                  {match.terrain?.name ?? "⏳"}, {match.terrain?.city ?? ""}
-                                </p>
+                              <div className="flex flex-col items-center">
+                                <Image
+                                  src={match.away.club.logo}
+                                  alt={`Logo ${match.away.short_name}`}
+                                  width={70}
+                                  height={70}
+                                  className="mb-2"
+                                  onError={(e) => {
+                                    e.currentTarget.onerror = null;
+                                    e.currentTarget.src = "/next.svg.png";
+                                  }}
+                                />
+                                <span className="text-center text-sm font-bold">
+                                  {match.away.short_name.split(' ')[0]}
+                                </span>
                               </div>
                             </div>
-                          </Link>
-                        </td>
-                      </tr>
-                    ))}
-                  </>
-                )}
-              </React.Fragment>
-            ))}
+                            <div className="flex-1 text-center md:text-right">
+                              <p className="text-gray-500 text-sm mt-2">
+                                {match.terrain?.name ?? "⏳"}, {match.terrain?.city ?? ""}
+                              </p>
+                            </div>
+                          </div>
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </React.Fragment>
+              );
+            })}
           </tbody>
         </table>
       </div>
