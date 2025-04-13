@@ -188,6 +188,23 @@ const GraphComponent: React.FC = () => {
         return colors[category as keyof typeof colors];
     };
 
+    const calculateTotalPoints = (matches: Match[]) => {
+        return matches.reduce((total, match) => {
+            const isHome = match.home.short_name === "ENT. ST CLEMENT MONT";
+            const isAway = match.away.short_name === "ENT. ST CLEMENT MONT";
+            const homeScore = match.home_score !== null ? match.home_score : 0;
+            const awayScore = match.away_score !== null ? match.away_score : 0;
+    
+            if ((isHome && homeScore > awayScore) || (isAway && awayScore > homeScore)) {
+                return total + 3; // Victoire
+            } else if (homeScore === awayScore) {
+                return total + 1; // Match nul
+            }
+            return total; // Défaite
+        }, 0);
+    };
+    
+
     const chartOptions: ChartOptions<"line"> = {
         responsive: true,
         maintainAspectRatio: false,
@@ -292,9 +309,16 @@ const GraphComponent: React.FC = () => {
             </div>
 
             {processMatchData() ? (
-                <div className="mt-2 md:mt-4 h-[400px]">
-                    <Line options={chartOptions} data={processMatchData()!} />
-                </div>
+                <>
+                    <div className="text-center mb-4">
+                        <span className="font-bold text-xl">
+                            {calculateTotalPoints(resultsByCategory[selectedCategory].slice(0, 6))} points sur 18
+                        </span>
+                    </div>
+                    <div className="mt-2 md:mt-4 h-[400px]">
+                        <Line options={chartOptions} data={processMatchData()!} />
+                    </div>
+                </>
             ) : (
                 <div className="text-center text-gray-500 mt-4">
                     Aucune statistique disponible pour cette catégorie.
