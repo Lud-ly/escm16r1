@@ -80,7 +80,7 @@ const MatchsAVenirPage: React.FC = () => {
 
   return (
     <div className="container mx-auto">
-      <h1 className="text-2xl text-center font-bold py-5 uppercase">Matchs</h1>
+      <h1 className="text-2xl text-center font-bold py-5 uppercase">Nos Matchs</h1>
       {/* Sélecteur de catégorie */}
       <div className="flex items-center p-3">
         <label htmlFor="category" className="mr-2 font-semibold">

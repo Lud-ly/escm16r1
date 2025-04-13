@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { FaFacebook, FaInstagram, FaExternalLinkAlt } from 'react-icons/fa';
+import { FaFacebook, FaInstagram, FaGlobe } from 'react-icons/fa';
 
 const SocialMediaLinks: React.FC = () => {
   return (
@@ -11,8 +11,8 @@ const SocialMediaLinks: React.FC = () => {
         className="mr-4"
       >
         <FaFacebook
-          size={20}
-          className="text-white hover:text-blue-300 transition-colors"
+          size={40}
+          className="text-black hover:text-red-800 transition-colors"
         />
       </Link>
       <Link
@@ -22,8 +22,8 @@ const SocialMediaLinks: React.FC = () => {
         className="mr-4"
       >
         <FaInstagram
-          size={20}
-          className="text-white hover:text-pink-400 transition-colors"
+          size={40}
+          className="text-black hover:text-red-800 transition-colors"
         />
       </Link>
       <Link
@@ -32,10 +32,10 @@ const SocialMediaLinks: React.FC = () => {
         rel="noopener noreferrer"
         className="mr-4"
       >
-        <FaExternalLinkAlt
-          size={22}
-          className="text-white hover:text-gray-400 transition-colors"
-        />
+         <FaGlobe
+            size={30}
+            className="text-black hover:text-red-800 transition-colors"
+          />
       </Link>
     </>
   );

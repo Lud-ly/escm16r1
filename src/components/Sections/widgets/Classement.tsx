@@ -141,7 +141,7 @@ const ClassementComponent = () => {
   return (
     <div className="p-4 mb-5">
       <h2 className="text-2xl text-center font-bold py-5 uppercase">
-        Classement R1 Occitanie
+        Classement {selectedCategory} R1
       </h2>
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
         {/* Date de mise à jour */}
@@ -182,7 +182,7 @@ const ClassementComponent = () => {
               <th className="p-2 text-left">Pos</th>
               <th className="p-2 text-left">Club</th>
               <th className="p-2 text-left">Nom</th>
-              <th className="p-2 text-center text-blue-900 font-bold text-lg">
+              <th className="p-2 text-center text-red-800 font-bold text-lg">
                 Pts
               </th>
               <th className="p-2 text-right">J</th>
@@ -192,7 +192,6 @@ const ClassementComponent = () => {
               <th className="p-2 text-right">BP</th>
               <th className="p-2 text-right">BC</th>
               <th className="p-2 text-right">Diff</th>
-              {/* <th className="p-2 text-center">T</th> */}
             </tr>
           </thead>
           <tbody>
@@ -225,7 +224,7 @@ const ClassementComponent = () => {
                       )}
                     </td>
                     <td className="p-2">{classement.equipe.short_name}</td>
-                    <td className="py-2 text-center text-blue-800 font-bold text-xl">
+                    <td className="py-2 text-center text-red-900 font-bold text-xl">
                       {classement.point_count}
                     </td>
                     <td className="p-2 text-right">
@@ -257,7 +256,7 @@ const ClassementComponent = () => {
               <tr>
                 <td colSpan={12} className="p-4 text-left text-gray-600">
                   Pas de données disponibles,
-                  <br /> vérifier votre connexion.
+                  <br /> vérifier votre connexion ou revenez plus tard.
                 </td>
               </tr>
             )}

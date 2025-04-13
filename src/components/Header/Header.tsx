@@ -2,20 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import Navigation from "../Sections/components/Navigation";
+import SocialMediaLinks from "../Sections/components/SocialMediaLinks";
 
-interface Props {
-  navigateWithParams: (path: string) => void;
-}
-
-export function Header({ navigateWithParams }: Props) {
+export function Header() {
   const handleLogoClick = () => {
     localStorage.removeItem("hasShownSplash");
   };
 
   return (
     <div
-      className="flex flex-row justify-between items-center p-5"
+      className="flex flex-row justify-around items-center p-5"
     >
       <Link href="/" onClick={handleLogoClick}>
         <Image
@@ -26,7 +22,7 @@ export function Header({ navigateWithParams }: Props) {
           priority
         />
       </Link>
-      <Navigation navigateWithParams={navigateWithParams} />
+      <SocialMediaLinks />
     </div>
   );
 };
