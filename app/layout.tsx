@@ -50,7 +50,7 @@ export default function RootLayout({
           <SplashScreen finishLoading={handleFinishLoading} />
         ) : (
           <>
-            <Header navigateWithParams={navigateWithParams} />
+            <Header />
             <main className="flex-grow">{children}</main>
             <BackToTopButton />
             <BottomNavBar navigateWithParams={navigateWithParams} />
