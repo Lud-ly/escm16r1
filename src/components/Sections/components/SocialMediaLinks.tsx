@@ -11,8 +11,8 @@ const SocialMediaLinks: React.FC = () => {
         className="mr-4"
       >
         <FaFacebook
-          size={40}
-          className="text-black hover:text-red-800 transition-colors"
+          size={30}
+          className="text-red-800 hover:text-blacktransition-colors"
         />
       </Link>
       <Link
@@ -22,8 +22,8 @@ const SocialMediaLinks: React.FC = () => {
         className="mr-4"
       >
         <FaInstagram
-          size={40}
-          className="text-black hover:text-red-800 transition-colors"
+          size={30}
+          className="text-red-800 hover:text-black transition-colors"
         />
       </Link>
       <Link
@@ -33,8 +33,8 @@ const SocialMediaLinks: React.FC = () => {
         className="mr-4"
       >
          <FaGlobe
-            size={30}
-            className="text-black hover:text-red-800 transition-colors"
+            size={25}
+            className="text-red-800 hover:text-black transition-colors"
           />
       </Link>
     </>

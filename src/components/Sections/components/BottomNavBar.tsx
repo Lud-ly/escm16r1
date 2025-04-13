@@ -4,10 +4,10 @@ import { usePathname } from 'next/navigation';
 import { FaChartLine, FaCalendarAlt, FaList, FaTrophy } from 'react-icons/fa';
 
 interface Props {
-  navigateWithParams: (path: string) => void;
+  withParams: (path: string) => void;
 }
 
-const BottomNavBar: React.FC<Props> = ({ navigateWithParams }) => {
+const BottomNavBar: React.FC<Props> = ({ withParams }) => {
   const pathname = usePathname();
   const currentYear = new Date().getFullYear();
 
@@ -28,46 +28,40 @@ const BottomNavBar: React.FC<Props> = ({ navigateWithParams }) => {
       <div className="flex justify-around items-center p-2">
         {/* Bouton Classement */}
         <div 
-          onClick={() => navigateWithParams('/')} 
+          onClick={() => withParams('/')} 
           className={getLinkStyle('/')}
         >
           <FaTrophy className="text-[30px] sm:text-[34px] mb-3" />
-          {/* <span className="text-[8px] sm:text-xs">Classement</span> */}
+          <span className="text-[8px] sm:text-xs">Classement</span>
         </div>
 
         {/* Bouton Matchs */}
         <div 
-          onClick={() => navigateWithParams('/matchs')} 
+          onClick={() => withParams('/matchs')} 
           className={getLinkStyle('/matchs')}
         >
           <FaCalendarAlt className="text-[30px] sm:text-[34px] mb-3" />
-          {/* <span className="text-[8px] sm:text-xs">Nos matchs</span> */}
+          <span className="text-[8px] sm:text-xs">Matchs</span>
         </div>
 
         {/* Bouton Tous les Matchs */}
         <div 
-          onClick={() => navigateWithParams('/tous-les-matchs')} 
+          onClick={() => withParams('/tous-les-matchs')} 
           className={getLinkStyle('/tous-les-matchs')}
         >
           <FaList className="text-[30px] sm:text-[34px] mb-3" />
-          {/* <span className="text-[8px] sm:text-xs">Tous les Matchs</span> */}
+          <span className="text-[8px] sm:text-xs">Journées</span>
         </div>
 
         {/* Bouton Stats */}
         <div 
-          onClick={() => navigateWithParams('/stats')} 
+          onClick={() => withParams('/stats')} 
           className={getLinkStyle('/stats')}
         >
           <FaChartLine className="text-[30px] sm:text-[34px] mb-3" />
+          <span className="text-[8px] sm:text-xs">Stats</span>
         </div>
 
-      </div>
-      <div className="flex justify-center items-center">
-        <div className="text-right flex flex-row items-center mx-auto">
-          <h6 className="text-[9px] text-white font-semibold tracking-wide mr-3">
-            🐔 Les Rôtis du Foot &copy; {currentYear}
-          </h6>
-        </div>
       </div>
     </nav>
   );

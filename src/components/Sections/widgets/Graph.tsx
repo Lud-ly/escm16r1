@@ -272,7 +272,7 @@ const GraphComponent: React.FC = () => {
 
     return (
         <div className="p-2 md:p-5">
-            <div className="flex items-center p-1">
+            <div className="flex items-center justify-center p-3">
                 <label htmlFor="category" className="mr-2 font-semibold">
                     Catégorie :
                 </label>

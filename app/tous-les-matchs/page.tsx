@@ -276,7 +276,7 @@ export default function TousLesMatchsPage() {
       </h1>
 
       {/* Sélecteur de catégorie */}
-      <div className="flex items-center p-3 justify-center">
+      <div className="flex items-center p-3 justify-center mb-5">
         <label htmlFor="category" className="mr-2 font-semibold">
           Catégorie :
         </label>
@@ -298,7 +298,7 @@ export default function TousLesMatchsPage() {
       <div className="mb-4 text-center flex justify-center items-center">
         {prevJournee !== null && (
           <button
-            className="mx-1 my-1 px-4 py-2 rounded bg-gray-300 text-black transition duration-200 ease-in-out hover:bg-gray-400 focus:outline-none"
+            className="mx-1 my-1 px-4 py-2 rounded bg-gray-100 text-black transition duration-200 ease-in-out hover:bg-gray-400 focus:outline-none"
             onClick={() => setSelectedJournee(prevJournee)}
           >
             <FaArrowLeft className="inline mr-1" /> {prevJournee}
@@ -306,7 +306,7 @@ export default function TousLesMatchsPage() {
           </button>
         )}
 
-        <div className="mx-2 px-4 py-2 bg-yellow-500 text-white rounded">
+        <div className="mx-2 px-4 py-2 bg-red-800 text-white rounded">
           {selectedJournee !== null ? (
             <span>
               {selectedJournee}
@@ -319,7 +319,7 @@ export default function TousLesMatchsPage() {
 
         {nextJournee !== null && (
           <button
-            className="mx-1 my-1 px-4 py-2 rounded bg-gray-300 text-black transition duration-200 ease-in-out hover:bg-gray-400 focus:outline-none"
+            className="mx-1 my-1 px-4 py-2 rounded bg-gray-100 text-black transition duration-200 ease-in-out hover:bg-gray-400 focus:outline-none"
             onClick={() => setSelectedJournee(nextJournee)}
           >
             {nextJournee}
@@ -387,15 +387,6 @@ export default function TousLesMatchsPage() {
 
                 return (
                   <React.Fragment key={journeeNumber}>
-                    <tr className="bg-yellow-100">
-                      <td
-                        colSpan={4}
-                        className="text-center text-red-500 font-bold bg-yellow-500 text-2xl p-5 rounded"
-                      >
-                        {journeeNumber}
-                        <sup>{getSuffix(Number(journeeNumber))}</sup> Journée
-                      </td>
-                    </tr>
                     {filteredMatches.map((match) => (
                       <tr
                         key={match.ma_no}

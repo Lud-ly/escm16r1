@@ -7,6 +7,7 @@ import SocialMediaLinks from "../Sections/components/SocialMediaLinks";
 export function Header() {
   const handleLogoClick = () => {
     localStorage.removeItem("hasShownSplash");
+    localStorage.removeItem("preferredCategory");
   };
 
   return (

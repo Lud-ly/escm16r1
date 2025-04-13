@@ -82,7 +82,7 @@ const MatchsAVenirPage: React.FC = () => {
     <div className="container mx-auto">
       <h1 className="text-2xl text-center font-bold py-5 uppercase">Nos Matchs</h1>
       {/* Sélecteur de catégorie */}
-      <div className="flex items-center p-3">
+      <div className="flex items-center justify-center p-3 text-lg">
         <label htmlFor="category" className="mr-2 font-semibold">
           Catégorie :
         </label>
@@ -90,7 +90,7 @@ const MatchsAVenirPage: React.FC = () => {
           id="category"
           value={selectedCategory}
           onChange={(e) => setCategory(e.target.value)}
-          className="p-2 border rounded-md bg-[#800020] text-gray-300"
+          className="p-2 border rounded-md bg-[#800020] text-gray-300 text-xl"
         >
           <option value="14">U14</option>
           <option value="15">U15</option>

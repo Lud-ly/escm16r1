@@ -10,7 +10,7 @@ const Footer = () => {
             href="https://occitanie.fff.fr"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[10px] text-white ml-1 underline hover:text-blue-500 transition-colors"
+            className="text-[10px] text-white ml-1 underline hover:text-red-800 transition-colors"
           >
             occitanie.fff.fr
           </a>

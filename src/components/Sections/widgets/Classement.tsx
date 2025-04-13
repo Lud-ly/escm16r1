@@ -144,11 +144,6 @@ const ClassementComponent = () => {
         Classement {selectedCategory} R1
       </h2>
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
-        {/* Date de mise à jour */}
-        <p className="text-sm text-black">
-          Mise à jour le : {formatDate(lastUpdated)}
-        </p>
-
         {/* Bouton Saison */}
         <button className="bg-transparent text-sm hover:bg-gray-200 text-black font-bold px-4 py-2 border border-gray-300 rounded">
           Saison 2024-2025
@@ -173,6 +168,7 @@ const ClassementComponent = () => {
             <option value="senior">SÉNIOR</option>
           </select>
         </div>
+        <p className="text-sm text-black">Mise à jour le : {formatDate(lastUpdated)}</p>
       </div>
 
       <div className="overflow-x-auto">
