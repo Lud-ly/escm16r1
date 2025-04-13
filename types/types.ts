@@ -135,6 +135,7 @@ export interface Match {
     external_updated_at: string;
   }>;
   match_feuille: string;  // URL vers la feuille de match
+  postponed?: boolean;
 }
 
 export interface TousLesResultatsProps {
