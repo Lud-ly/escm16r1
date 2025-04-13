@@ -16,6 +16,7 @@ import {
 import Loader from "../components/Loader";
 import { Match } from "~/types/types";
 import ChickenSoccerStory from "../components/ChickenSoccerStory";
+import { useCategoryState } from '../../../../hooks/useCategoryState';
 
 ChartJS.register(
     CategoryScale,
@@ -30,12 +31,12 @@ ChartJS.register(
 const GraphComponent: React.FC = () => {
     const [resultsByCategory, setResultsByCategory] = useState<Record<string, Match[]>>({});
     const [isLoading, setIsLoading] = useState(true);
-    const [selectedCategory, setSelectedCategory] = useState("16");
+    const { selectedCategory, setCategory } = useCategoryState();
 
     useEffect(() => {
         const fetchAllCategories = async () => {
             setIsLoading(true);
-            const categories = ["14", "15", "16", "17", "18", "20"];
+            const categories = ["14", "15", "16", "17", "18", "senior"];
             const results: Record<string, Match[]> = {};
 
             try {
@@ -278,7 +279,7 @@ const GraphComponent: React.FC = () => {
                 <select
                     id="category"
                     value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    onChange={(e) => setCategory(e.target.value)}
                     className="p-2 border rounded-md bg-[#800020] text-gray-300"
                 >
                     <option value="14">U14</option>
@@ -286,7 +287,7 @@ const GraphComponent: React.FC = () => {
                     <option value="16">U16</option>
                     <option value="17">U17</option>
                     <option value="18">U18</option>
-                    <option value="20">Sénior</option>
+                    <option value="senior">SÉNIOR</option>
                 </select>
             </div>
 

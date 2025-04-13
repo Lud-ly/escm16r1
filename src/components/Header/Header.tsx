@@ -4,7 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import Navigation from "../Sections/components/Navigation";
 
-export const Header = () => {
+interface Props {
+  navigateWithParams: (path: string) => void;
+}
+
+export function Header({ navigateWithParams }: Props) {
   const handleLogoClick = () => {
     localStorage.removeItem("hasShownSplash");
   };
@@ -22,7 +26,7 @@ export const Header = () => {
           priority
         />
       </Link>
-      <Navigation />
+      <Navigation navigateWithParams={navigateWithParams} />
     </div>
   );
 };

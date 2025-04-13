@@ -5,7 +5,7 @@ import Image from "next/image";
 import { FaArrowUp, FaArrowRight, FaArrowDown, FaSync } from "react-icons/fa";
 import Loader from "../components/Loader";
 import ChickenSoccerStory from "../components/ChickenSoccerStory";
-
+import { useCategoryState } from '../../../../hooks/useCategoryState';
 
 interface ClassementJournee {
   "@id": string;
@@ -55,7 +55,7 @@ const ClassementComponent = () => {
   const [logos, setLogos] = useState<{ [key: string]: string }>({});
   const [lastUpdated, setLastUpdated] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState<string>('16');
+  const { selectedCategory, setCategory } = useCategoryState();
   const [results, setResults] = useState<ClubResult[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -162,7 +162,7 @@ const ClassementComponent = () => {
           <select
             id="category"
             value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            onChange={(e) => setCategory(e.target.value)}
             className="p-2 border rounded-md bg-[#800020] text-gray-300"
           >
             <option value="14">U14</option>
@@ -170,7 +170,7 @@ const ClassementComponent = () => {
             <option value="16">U16</option>
             <option value="17">U17</option>
             <option value="18">U18</option>
-            <option value="20">Sénior</option>
+            <option value="senior">SÉNIOR</option>
           </select>
         </div>
       </div>

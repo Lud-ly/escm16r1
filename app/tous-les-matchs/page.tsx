@@ -7,6 +7,7 @@ import Loader from "../../src/components/Sections/components/Loader";
 import { FaSync } from "react-icons/fa";
 import Link from "next/link";
 import ChickenSoccerStory from "~/src/components/Sections/components/ChickenSoccerStory";
+import { useCategoryState } from '../../hooks/useCategoryState';
 
 export default function TousLesMatchsPage() {
   const [matches, setMatches] = useState<Match[]>([]);
@@ -14,7 +15,7 @@ export default function TousLesMatchsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedJournee, setSelectedJournee] = useState<number | null>(null);
-  const [selectedCategoryMatch, setSelectedCategoryMatch] = useState<string>('16');
+  const { selectedCategory, setCategory } = useCategoryState();
 
   const categories = [
     { id: '14', name: 'U14' },
@@ -22,21 +23,21 @@ export default function TousLesMatchsPage() {
     { id: '16', name: 'U16' },
     { id: '17', name: 'U17' },
     { id: '18', name: 'U18' },
-    { id: '20', name: 'Sénior' }
+    { id: 'senior', name: 'Sénior' }
   ];
 
   const fetchAllMatches = async () => {
     setIsLoading(true);
     try {
       // Fetch first page to get total items
-      const firstResponse = await fetch(`/api/matchs/1?category=${selectedCategoryMatch}`);
+      const firstResponse = await fetch(`/api/matchs/1?category=${selectedCategory}`);
       const firstData = await firstResponse.json();
       const totalItems = firstData["hydra:totalItems"];
       const totalPages = Math.ceil(totalItems / 30);
 
       const allMatches: Match[] = [];
       for (let page = 1; page <= totalPages; page++) {
-        const response = await fetch(`/api/matchs/${page}?category=${selectedCategoryMatch}`);
+        const response = await fetch(`/api/matchs/${page}?category=${selectedCategory}`);
         const data = await response.json();
         allMatches.push(...data["hydra:member"]);
       }
@@ -64,7 +65,7 @@ export default function TousLesMatchsPage() {
 
   useEffect(() => {
     fetchAllMatches();
-  }, [selectedCategoryMatch]);
+  }, [selectedCategory]);
 
   const getSuffix = (number: number) => {
     if (number === 1) return "ère";
@@ -99,8 +100,8 @@ export default function TousLesMatchsPage() {
         </label>
         <select
           id="category"
-          value={selectedCategoryMatch}
-          onChange={(e) => setSelectedCategoryMatch(e.target.value)}
+          value={selectedCategory}
+          onChange={(e) => setCategory(e.target.value)}
           className="p-2 border rounded-md bg-[#800020] text-gray-300"
         >
           {categories.map(category => (

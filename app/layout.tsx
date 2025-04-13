@@ -6,27 +6,27 @@ import Footer from "~/src/components/Footer/footer";
 import BackToTopButton from '../src/components/Sections/components/BackToTopButton';
 import BottomNavBar from "~/src/components/Sections/components/BottomNavBar";
 import SplashScreen from "~/src/components/Sections/components/SplashScreen";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import ChickenSoccerStory from "~/src/components/Sections/components/ChickenSoccerStory";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import { useEffect, useState, useCallback } from "react";
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
   const pathName = usePathname();
+  const searchParams = useSearchParams();
   const isHome = pathName === "/";
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Vérifie si le splash screen a déjà été affiché
     const hasShownSplash = localStorage.getItem("hasShownSplash");
 
     if (!hasShownSplash && isHome) {
-      setIsLoading(true); // Affiche le splash screen si c'est la première visite
+      setIsLoading(true);
     } else {
-      setIsLoading(false); // Sinon, ne pas afficher 
+      setIsLoading(false);
     }
   }, [isHome]);
 
@@ -34,6 +34,13 @@ export default function RootLayout({
     setIsLoading(false);
     localStorage.setItem("hasShownSplash", "true");
   };
+
+  const navigateWithParams = useCallback((path: string) => {
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+    const search = current.toString();
+    const query = search ? `?${search}` : "";
+    router.push(`${path}${query}`);
+  }, [router, searchParams]);
 
   return (
     <html lang="en">
@@ -43,10 +50,10 @@ export default function RootLayout({
           <SplashScreen finishLoading={handleFinishLoading} />
         ) : (
           <>
-            <Header />
+            <Header navigateWithParams={navigateWithParams} />
             <main className="flex-grow">{children}</main>
             <BackToTopButton />
-            <BottomNavBar />
+            <BottomNavBar navigateWithParams={navigateWithParams} />
             <Footer />
           </>
         )}

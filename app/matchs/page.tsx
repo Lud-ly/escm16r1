@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Loader from '../../src/components/Sections/components/Loader';
 import ChickenSoccerStory from '~/src/components/Sections/components/ChickenSoccerStory';
+import { useCategoryState } from '../../hooks/useCategoryState';
 
 interface Match {
   ma_no: number;
@@ -29,8 +30,7 @@ interface Match {
 const MatchsAVenirPage: React.FC = () => {
   const [matches, setMatches] = useState<Match[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedCategoryMatch, setSelectedCategoryMatch] = useState<string>('16');
-
+  const { selectedCategory, setCategory } = useCategoryState();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -39,12 +39,17 @@ const MatchsAVenirPage: React.FC = () => {
     const fetchMatches = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`/api/matchs?category=${selectedCategoryMatch}`, { signal });
+        console.log('Fetching matches for category:', selectedCategory);
+        
+        const response = await fetch(`/api/matchs?category=${selectedCategory}`, { signal });
+
         if (!response.ok) {
           throw new Error('Failed to fetch match data');
         }
         const data = await response.json();
+
         console.log('Fetched matches:', data['hydra:member']);
+
         setMatches(data['hydra:member']);
       } catch (error) {
         if (error === 'AbortError') {
@@ -62,7 +67,7 @@ const MatchsAVenirPage: React.FC = () => {
     return () => {
       controller.abort(); // Annule la requête si le composant est démonté
     };
-  }, [selectedCategoryMatch]);
+  }, [selectedCategory]);
 
 
   if (isLoading) {
@@ -83,8 +88,8 @@ const MatchsAVenirPage: React.FC = () => {
         </label>
         <select
           id="category"
-          value={selectedCategoryMatch}
-          onChange={(e) => setSelectedCategoryMatch(e.target.value)}
+          value={selectedCategory}
+          onChange={(e) => setCategory(e.target.value)}
           className="p-2 border rounded-md bg-[#800020] text-gray-300"
         >
           <option value="14">U14</option>
@@ -92,7 +97,7 @@ const MatchsAVenirPage: React.FC = () => {
           <option value="16">U16</option>
           <option value="17">U17</option>
           <option value="18">U18</option>
-          <option value="20">Sénior</option>
+          <option value="senior">SÉNIOR</option>
         </select>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

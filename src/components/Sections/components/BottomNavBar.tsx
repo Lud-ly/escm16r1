@@ -1,16 +1,19 @@
 "use client";
 
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FaChartLine, FaCalendarAlt, FaList, FaTrophy } from 'react-icons/fa';
 
-const BottomNavBar: React.FC = () => {
+interface Props {
+  navigateWithParams: (path: string) => void;
+}
+
+const BottomNavBar: React.FC<Props> = ({ navigateWithParams }) => {
   const pathname = usePathname();
   const currentYear = new Date().getFullYear();
 
   const getLinkStyle = (path: string) => {
     const isActive = pathname === path;
-    return `flex flex-col items-center relative ${isActive ? 'text-yellow-500 scale-110' : 'text-white'}`;
+    return `flex flex-col items-center relative ${isActive ? 'text-yellow-500 scale-110' : 'text-white'} cursor-pointer`;
   };
 
   return (
@@ -24,27 +27,39 @@ const BottomNavBar: React.FC = () => {
     >
       <div className="flex justify-around items-center p-2">
         {/* Bouton Classement */}
-        <Link href="/" className={getLinkStyle('/')}>
+        <div 
+          onClick={() => navigateWithParams('/')} 
+          className={getLinkStyle('/')}
+        >
           <FaTrophy className="text-[30px] sm:text-[34px] mb-3" />
           {/* <span className="text-[8px] sm:text-xs">Classement</span> */}
-        </Link>
+        </div>
 
         {/* Bouton Matchs */}
-        <Link href="/matchs" className={getLinkStyle('/matchs')}>
+        <div 
+          onClick={() => navigateWithParams('/matchs')} 
+          className={getLinkStyle('/matchs')}
+        >
           <FaCalendarAlt className="text-[30px] sm:text-[34px] mb-3" />
           {/* <span className="text-[8px] sm:text-xs">Nos matchs</span> */}
-        </Link>
+        </div>
 
         {/* Bouton Tous les Matchs */}
-        <Link href="/tous-les-matchs" className={getLinkStyle('/tous-les-matchs')}>
+        <div 
+          onClick={() => navigateWithParams('/tous-les-matchs')} 
+          className={getLinkStyle('/tous-les-matchs')}
+        >
           <FaList className="text-[30px] sm:text-[34px] mb-3" />
           {/* <span className="text-[8px] sm:text-xs">Tous les Matchs</span> */}
-        </Link>
+        </div>
 
         {/* Bouton Stats */}
-        <Link href="/stats" className={getLinkStyle('/stats')}>
+        <div 
+          onClick={() => navigateWithParams('/stats')} 
+          className={getLinkStyle('/stats')}
+        >
           <FaChartLine className="text-[30px] sm:text-[34px] mb-3" />
-        </Link>
+        </div>
 
       </div>
       <div className="flex justify-center items-center">

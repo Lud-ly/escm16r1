@@ -1,18 +1,21 @@
-import Link from "next/link";
+"use client";
+
 import Image from "next/image";
 import { useState } from "react";
 import {
   FaBars,
   FaTimes,
-  FaChartLine,
   FaCalendarAlt,
   FaList,
-  FaFutbol,
   FaTrophy,
 } from "react-icons/fa";
 import SocialMediaLinks from "./SocialMediaLinks";
 
-const Navigation = () => {
+interface Props {
+  navigateWithParams: (path: string) => void;
+}
+
+const Navigation = ({ navigateWithParams }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleOutsideClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -21,7 +24,8 @@ const Navigation = () => {
     }
   };
 
-  const handleLinkClick = () => {
+  const handleLinkClick = (path: string) => {
+    navigateWithParams(path);
     setIsOpen(false);
   };
 
@@ -65,34 +69,30 @@ const Navigation = () => {
             <div className="flex justify-end items-center mb-10">
               <SocialMediaLinks />
             </div>
-            <Link
-              href="/classement"
-              className="flex items-center py-2 text-xl text-white hover:text-blue-300 uppercase"
-              onClick={handleLinkClick}
+            <div
+              className="flex items-center py-2 text-xl text-white hover:text-blue-300 uppercase cursor-pointer"
+              onClick={() => handleLinkClick('/classement')}
             >
               <FaTrophy className="mr-2 text-white" /> Classement
-            </Link>
-            <Link
-              href="/matchs"
-              className="flex items-center py-2 text-xl text-white hover:text-blue-300 uppercase"
-              onClick={handleLinkClick}
+            </div>
+            <div
+              className="flex items-center py-2 text-xl text-white hover:text-blue-300 uppercase cursor-pointer"
+              onClick={() => handleLinkClick('/matchs')}
             >
               <FaCalendarAlt className="mr-2 text-white" /> Nos Matchs
-            </Link>
-            <Link
-              href="/tous-les-matchs"
-              className="flex items-center py-2 text-xl text-white hover:text-blue-300 uppercase"
-              onClick={handleLinkClick}
+            </div>
+            <div
+              className="flex items-center py-2 text-xl text-white hover:text-blue-300 uppercase cursor-pointer"
+              onClick={() => handleLinkClick('/tous-les-matchs')}
             >
               <FaList className="mr-2 text-white" /> Tous les Matchs
-            </Link>
-            <Link
-              href="/stats"
-              className="flex items-center py-2 text-xl text-white hover:text-blue-300 uppercase"
-              onClick={handleLinkClick}
+            </div>
+            <div
+              className="flex items-center py-2 text-xl text-white hover:text-blue-300 uppercase cursor-pointer"
+              onClick={() => handleLinkClick('/stats')}
             >
               <FaList className="mr-2 text-white" /> Stats
-            </Link>
+            </div>
           </div>
         </div>
       )}

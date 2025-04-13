@@ -2,8 +2,8 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const selectedCat = req.query.category || '16';
-
-  const validCategories = ['14', '15', '16', '17', '18', '20'];
+console.log('Selected category:', selectedCat);
+  const validCategories = ['14', '15', '16', '17', '18', 'senior'];
   if (!validCategories.includes(selectedCat as string)) {
     return res.status(400).json({ message: "Paramètre invalide." });
   }
@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     '16': { id: '420289', phase: 1 },
     '17': { id: '420290', phase: 1 },
     '18': { id: '420294', phase: 1 },
-    '20': { id: '420269', phase: 1 },
+    'senior': { id: '420269', phase: 1 },
   };
 
   const competInfo = competConfig[selectedCat as keyof typeof competConfig];
